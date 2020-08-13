@@ -1,0 +1,80 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src='https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <title>Are you a good ally?</title>
+  </head>
+  <body>
+      <div class="container">
+            <br>
+            <h1>Allyship Detection Demo</h1>
+            <br>           
+            <form id='text-form'>
+                    <div class="form-group">
+                      <textarea class="form-control" id="textInput" aria-describedby="type your text" placeholder="Are you a good ally? Try to type your sentence here"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">AllyScore</button>
+            </form>
+            <br>
+            <div class='result'>
+                <h2><br data-mce-bogus="1"></h2>
+                <h3><br data-mce-bogus="1"></h3>
+                <p><br data-mce-bogus="1"></p>
+                <p id='p1'></p>
+                <p id='p2'></p>
+                <p id='p3'></p>
+            </div>            
+        </div> 
+      </div> 
+
+    <script>
+        $(document).ready(function(){
+            $('#text-form').submit((e) => {
+                e.preventDefault();
+                var searchVal = $('#textInput').val().trim();
+                if(searchVal.length > 2){
+                    requestResult(searchVal);
+                } else {
+                    console.log('please input more text')
+                }
+            })
+        })
+
+        function requestResult(val) {
+            $.ajax({
+                methond: 'GET',
+                url: "/predictToxicity",
+                data: { sentence: val}, 
+                success: function(data){
+                    console.log(data)
+                    $("h3").text(`Your Ally Score is: ${data.score1}`);
+                    $('#p1').text(`Toxicity score is: ${data.score2}`);
+                    $("#p2").text(`Politeness Score is: ${data.score3}`);
+                    $("#p3").text(`Attack Score is: ${data.score4}`);
+                    var description = "";
+                    if(data.score1 >=0.7){
+                        description = 'A wonderful Ally!';
+                    } else if (data.score1 > 0.37 & data.score1< 0.7){
+                        description = 'Try your best!';
+                    }
+                    else{
+                        description = 'Take the allyship course and Let us grow together'
+                    }
+                    $("h2").text(description);
+                }
+            });
+        }
+        
+    </script>
+    
+  </body>
+</html>
